@@ -1,0 +1,72 @@
+/dts-v1/;
+
+/ {
+    model = "Infinix Note 30i (X6716)";
+    compatible = "apple,arm-platform", "mediatek,mt6768";
+    #address-cells = <2>;
+    #size-cells = <2>;
+
+    chosen {
+        bootargs = "-v serial=3 debug=0x14e keepsyms=1";
+        stdout-path = "serial0:921600n8";
+    };
+
+    memory@40000000 {
+        device_type = "memory";
+        reg = <0x0 0x40000000 0x0 0xC0000000>; /* 3 GB usable из 4 GB */
+    };
+
+    cpus {
+        #address-cells = <2>;
+        #size-cells = <0>;
+
+        cpu@0 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a55";
+            reg = <0x0 0x0>;
+            enable-method = "psci";
+        };
+        cpu@100 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a75";
+            reg = <0x0 0x100>;
+            enable-method = "psci";
+        };
+    };
+
+    psci {
+        compatible = "arm,psci-1.0", "arm,psci-0.2";
+        method = "smc";
+    };
+
+    timer {
+        compatible = "arm,armv8-timer";
+        interrupts = <1 13 0xf08>,
+                     <1 14 0xf08>,
+                     <1 11 0xf08>,
+                     <1 10 0xf08>;
+    };
+
+    gic: interrupt-controller@c000000 {
+        compatible = "arm,gic-v3";
+        #interrupt-cells = <3>;
+        interrupt-controller;
+        reg = <0x0 0x0c000000 0x0 0x40000>,  /* GICD */
+              <0x0 0x0c040000 0x0 0x100000>; /* GICR */
+    };
+
+    serial0: serial@11002000 {
+        compatible = "mediatek,mt6768-uart", "ns16550a";
+        reg = <0x0 0x11002000 0x0 0x1000>;
+        clock-frequency = <26000000>;
+    };
+
+    framebuffer@77520000 {
+        compatible = "simple-framebuffer";
+        reg = <0x0 0x77520000 0x0 0x022e0000>;
+        width = <1080>;
+        height = <2400>;
+        stride = <4352>; /* 1088 * 4 */
+        format = "a8r8g8b8";
+    };
+};
