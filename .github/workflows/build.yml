@@ -1,0 +1,39 @@
+name: Build HakiOS X6716
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout X6716 repo
+      uses: actions/checkout@v4
+
+    - name: Clone HakiOS XNU Kernel
+      run: |
+        git clone --depth=1 https://github.com xnu-kernel
+
+    - name: Install build tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu device-tree-compiler make
+
+    - name: Build Loader and DTB
+      run: |
+        make -C loader
+        dtc -I dts -O dtb -o x6716.dtb device/x6716/x6716.dts
+        gzip -k -f loader/Image
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: hakios-x6716-files
+        path: |
+          loader/Image
+          loader/Image.gz
+          x6716.dtb
+          
