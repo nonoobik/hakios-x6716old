@@ -15,7 +15,7 @@ jobs:
 
     - name: Clone HakiOS XNU Kernel
       run: |
-        git clone --depth=1 https://github.com xnu-kernel
+        git clone --depth=1 https://github.com/oosexgang/hakios-xnu-kernel xnu-kernel
 
     - name: Install build tools
       run: |
